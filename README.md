@@ -1,6 +1,6 @@
 # Overview and Usage
 
-A simple OCR service over REST. A typical workflow from a client's perspective would be to PUT the image to the server, then GET the OCRed output, either the plain text version or the marked up HOCR version. Clients can then issue a DELETE request to remove the image file from the server. The OCR operation is handed off to the Tesseract OCR engine during the GET requests, which can take a few seconds to complete.
+A simple OCR service over REST that uses the [Tesseract](http://code.google.com/p/tesseract-ocr/) OCR engine (although any OCR engine that has a command-line interface could be used instead). A typical workflow from a client's perspective would be to PUT the image to the server, then GET the OCRed output, either the plain text version or the marked up [HOCR](http://en.wikipedia.org/wiki/HOCR) version. Clients can then issue a DELETE request to remove the image file from the server. The OCR operation is handed off to Tesseract during the GET requests, which can take a few seconds to complete.
 
 Image files to be OCRed are PUT to the server using requests similar to the following (using curl as an example HTTP agent), which include the path to the file in the request URL:
 
@@ -31,24 +31,24 @@ Successful deletion of the image will result in a 200 response code, unsuccessfu
 # Prerequisites
 
 * PHP >= 5.3.0
-* Tesseract (http://code.google.com/p/tesseract-ocr/)
+* [Tesseract](http://code.google.com/p/tesseract-ocr/). Install Tesseract according to the instructions provided for your operating system.
 
 # Installation
 
-This server is written in the Slim PHP microframework (http://www.slimframework.com/). Install Tesseract according to the instructions provided for your operating syste. To install the server application, clone the git repo, then install Slim (following the instructions below, which show you how to do this using composer).
+The REST server itself is written in the [Slim PHP microframework](http://www.slimframework.com/). To install the server application, clone the git repo, then install Slim (following the instructions below, which describe how to install Slim using composer).
 
 Clone the github repo beneath your Apache web root, and from within the resulting directory, issue the following commands:
 
 1. ```curl -s https://getcomposer.org/installer | php```
 2. ```php composer.phar install```
 
-That's it. Your server is now ready at http://yourhost/path/to/where/you/cloned/page. For example, if you cloned the git repo directly beneath your web root, the server will be at http://yourhost/ocr_rest/page and will accept PUT requests as illustrated above.
+That's it. Your server is now ready at http://yourhost/path/to/where/you/cloned/page. For example, if you cloned the git repo directly beneath your web root, the server will be at http://yourhost/ocr_rest/page and will be ready to accept PUT requests as illustrated above.
 
-You should adjust settings in config.php before testing.
+You should adjust settings in config.php before testing, particularly the paths and allowed image file types.
 
 # Limiting Access to your Server
 
-This OCR server provides two ways to limit access to it: via the use of API tokens and via an IP addresss whitelist.
+This REST server provides two ways to limit access to it: via the use of API tokens and via an IP addresss whitelist.
 
 To use API tokens, populate the $tokens array in config.php with your tokens, and have your clients use them in the 'X-Auth-Key' HTTP request header, as in this example:
 
@@ -62,3 +62,7 @@ The second method of restricting access to your server is to define a list of IP
 
 If either array is defined, the server responds to all requests that fail the authorization with a 403 HTTP response code.
 
+# To do
+
+* More, better error detection and handling.
+* Add deletion of OCR output to DELETE requests.
