@@ -75,29 +75,75 @@ $app->put('/page/:filename', function ($filename) use ($app) {
  
   $request = $app->request();
   $image_input_path = $config['image_base_dir'] . $filename;
-  $transcript_output_path = getTranscriptPathFromImagePath($image_input_path);
 
   // Log some stuff to the apache error_log.
   $log = $app->getLog();
-  $log->debug("Image output path: " . $image_input_path);
-  $log->debug("Transcript output path: " . $transcript_output_path);
 
   // Write out the image file
   if (file_put_contents($image_input_path, $page_image_content)) {
-    $log->debug("Writing out image appears to have been successful.");
+    $log->debug("Image output path from PUT succeeded: " . $image_input_path);
+    $app->halt(201);
+  }
+  else {
+    $log->debug("Image output path from PUT failed: " . $image_input_path);
+    $app->halt(500);
+  }
+});
+
+/**
+ * Route for GET /page. 
+ *
+ * @param string $filename
+ *  The filename appended to /page, tokenized by :filename.
+ * @param object $app
+ *  The global $app object instantiated at the top of this file.
+ */
+$app->get('/page/:filename', function ($filename) use ($app) {
+  global $config;
+  $request = $app->request();
+  $image_input_path = $config['image_base_dir'] . $filename;
+
+  // Log some stuff to the apache error_log.
+  $log = $app->getLog();
+
+  // Check to see if the image file exists and if not, return a 204 No Content
+  // response.
+  if (!file_exists($image_input_path)) {
+     $log->debug("Image not found in GET: " . $image_input_path);
+     $app->halt(204);
+  }
+  
+  // If the client wants HTML, generate hocr output.
+  if (preg_match('/text\/html/', $request->headers('Accept'))) {
+    $transcript_output_path = getTranscriptPathFromImagePath($image_input_path);
+    $log->debug("Transcript output path: " . $transcript_output_path);
     // Execute OCR command
     $command = $config['ocr_engine'] . ' ' . escapeshellarg($image_input_path) . ' ' . 
-      $transcript_output_path . '.txt';
+      $transcript_output_path . ' hocr';
     $log->debug("Command: " . $command);
     // @todo: Catch error on exec().
     $ret = exec($command, $ret, $exit_value);
-    // Write out transcript to the client.
+    // Write out transcript to the client. Tesseract adds the extension
+    // .html to its HOCR output file. 
+    $transcript = file_get_contents($transcript_output_path . '.html');
+    $app->response->headers->set('Content-Type', 'text/html;charset=utf-8');
+    $app->response->setBody($transcript);
+  }
+  // If the client wants text, generate text output.
+  if (preg_match('/text\/plain/', $request->headers('Accept'))) {
+    $transcript_output_path = getTranscriptPathFromImagePath($image_input_path);
+    $log->debug("Transcript output path: " . $transcript_output_path);
+    // Execute OCR command
+    $command = $config['ocr_engine'] . ' ' . escapeshellarg($image_input_path) . ' ' . 
+      $transcript_output_path;
+    $log->debug("Command: " . $command);
+    // @todo: Catch error on exec().
+    $ret = exec($command, $ret, $exit_value);
+    // Write out transcript to the client. Tesseract adds the extension
+    // .txt to its plain text output file.
     $transcript = file_get_contents($transcript_output_path . '.txt');
     $app->response->headers->set('Content-Type', 'text/plain;charset=utf-8');
     $app->response->setBody($transcript);
-  }
-  else {
-    $app->halt(500);
   }
 });
 
