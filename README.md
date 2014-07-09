@@ -1,6 +1,6 @@
-# Overview
+# Overview and Usage
 
-A simple OCR service over REST. A typical workflow is to PUT the image to the server, then GET the OCRed output. The OCR operation is performed during the GET requests, so those requests can take a few seconds to complete.
+A simple OCR service over REST. A typical workflow is to PUT the image to the server, then GET the OCRed output. Clients can then issue a DELETE request to remove the image file from the server. The OCR operation is performed during the GET requests, so those requests can take a few seconds to complete.
 
 Image files to be OCRed are PUT to the server using requests similar to the following (using curl as an example HTTP agent), which include the path to the file in the request URL:
 
@@ -11,14 +11,22 @@ curl -X PUT --data-binary @/path/to/image/file.jpg http://serverhost.example.com
 To retrieve a plain text representation of the file (indicated by the 'Accept: text/plain' header), issue the following GET request (note that the image filename is appended to the end of the request URL):
 
 ```
-curl -v -H 'Accept: text/plain' -X GET http://thinkpad/ocr_rest/page/file.jpg
+curl -X GET -v -H 'Accept: text/plain' http://thinkpad/ocr_rest/page/file.jpg
 ```
 This request will return a response to the client with the OCRed text in the response body and a Content-Type response header of 'text/plain;charset=utf-8'. To retrieve an [HOCR](http://en.wikipedia.org/wiki/HOCR) representation of the file (indicated by the 'Accept: text/HTML' header), issue the following GET request:
 
 ```
-curl -v -H 'Accept: text/HTML' -X GET http://thinkpad/ocr_rest/page/file.jpg
+curl -X GET -v -H 'Accept: text/HTML' http://thinkpad/ocr_rest/page/file.jpg
 ```
 This request will return the OCRed text in the response body and a Content-Type response header of 'text/html;charset=utf-8'.
+
+To delete an image file, clients can issue a DELETE request to the URL of the image resource:
+
+```
+curl -v -X DELETE http://thinkpad/ocr_rest/page/Hutchinson1794-1-0257.jpg
+```
+
+Successful deletion of the image will result in a 200 response code, unsuccessful requests will result in a 500 response code.
 
 # Prerequisites
 

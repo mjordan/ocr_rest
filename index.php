@@ -91,7 +91,8 @@ $app->put('/page/:filename', function ($filename) use ($app) {
 });
 
 /**
- * Route for GET /page. 
+ * Route for GET /page. Example requests: curl -X GET -v -H 'Accept: text/HTML' http://thinkpad/ocr_rest/page/file.jpg
+ * and curl -X GET -v -H 'Accept: text/text`' http://thinkpad/ocr_rest/page/file.jpg
  *
  * @param string $filename
  *  The filename appended to /page, tokenized by :filename.
@@ -145,6 +146,36 @@ $app->get('/page/:filename', function ($filename) use ($app) {
     $app->response->headers->set('Content-Type', 'text/plain;charset=utf-8');
     $app->response->setBody($transcript);
   }
+});
+
+/**
+ * Route for DELETE /page. No request body is returned, but a reponse code of either 200 (on success) or
+ * 500 (on failure) is returned.
+ * Example request: curl -X DELETE --data-binary @/path/to/image/file.jpg http://thinkpad/ocr-server/page/file.jpg
+ *
+ * @param string $filename
+ *  The filename appended to /page, tokenized by :filename.
+ * @param object $app
+ *  The global $app object instantiated at the top of this file.
+ */
+$app->delete('/page/:filename', function ($filename) use ($app) {
+  global $config;
+  $image_input_path = $config['image_base_dir'] . $filename;
+
+  // Check to see if the image file exists and if not, return a 204 No Content
+  // response.
+  if (!file_exists($image_input_path)) {
+     $log->debug("Image not found in GET: " . $image_input_path);
+     $app->halt(204);
+  }
+
+  if (unlink($image_input_path)) {
+    $app->halt(200);
+  }
+  else {
+    $app->halt(500);
+  }
+
 });
 
 // Run the Slim app.

@@ -8,6 +8,8 @@
  * General application configuration settings.
  */
 $config = array(
+  // Paths to the directories where uploaded imgages and their derivative
+  // OCR transcripts are stored. Must be writable by the web server.
   'image_base_dir' => '/tmp/ocr_images/',
   'transcript_base_dir' => '/tmp/ocr_transcripts/',
   // A |-spearated list of extensions for the page image files you want to OCR.
