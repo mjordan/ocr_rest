@@ -62,7 +62,17 @@ The second method of restricting access to your server is to define a list of IP
 
 If either array is defined, the server responds to all requests that fail the authorization with a 403 HTTP response code.
 
+# Logging
+
+The application logs some basic info to the web server's error log, including:
+
+* The full command used to run the OCR engine is logged.
+* If the OCR engine encouters an error (specifically, if its exit code is not 0), the output of the command is logged.
+* Paths to the image file uploaded during PUT requests, and the OCR output generated during GET requests, are logged.
+* During GET requests, if the expected OCR output files are not found (possibly because they were not created or there is no correspoding image file), their paths are logged.
+
 # To do
 
 * More, better error detection and handling.
+* Some logging options.
 * Add deletion of OCR output to DELETE requests.
