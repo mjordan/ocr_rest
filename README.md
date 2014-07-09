@@ -4,7 +4,7 @@ A simple OCR service over REST. Image files to be OCRed are PUT to the server us
 
 ```
 curl -X PUT --data-binary @/path/to/image/file.jpg http://serverhost.example.com/ocr_rest/page/file.jpg
-``
+```
 
 Note that the image filename is appended to the end of the request URL. This request will return the OCRed text (with a Content-Type response header of 'text/plain;charset=utf-8') to the client.
 
