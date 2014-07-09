@@ -1,6 +1,6 @@
 # Overview and Usage
 
-A simple OCR service over REST that uses the [Tesseract](http://code.google.com/p/tesseract-ocr/) OCR engine (although any OCR engine that has a command-line interface could be used instead). A typical workflow from a client's perspective would be to PUT the image to the server, then GET the OCRed output, either the plain text version or the marked up [HOCR](http://en.wikipedia.org/wiki/HOCR) version. Clients can then issue a DELETE request to remove the image file from the server. The OCR operation is handed off to Tesseract during the GET requests, which can take a few seconds to complete.
+A simple OCR service over REST that uses the [Tesseract](http://code.google.com/p/tesseract-ocr/) OCR engine (although any OCR engine that has a command-line interface could be used instead). A typical workflow from a client's perspective would be to PUT the image to the server, then GET the OCRed output, either the plain text version or the [HOCR](http://en.wikipedia.org/wiki/HOCR) version. Clients can then issue a DELETE request to remove the image file from the server. The OCR operation is handed off to Tesseract during the GET requests, so these can take a few seconds to complete.
 
 Image files to be OCRed are PUT to the server using requests similar to the following (using curl as an example HTTP agent), which include the path to the file in the request URL:
 
@@ -16,7 +16,7 @@ curl -v -X GET -H 'Accept: text/plain' http://host/ocr_rest/page/file.jpg
 This request will return a response to the client with the OCRed text in the response body and a Content-Type response header of 'text/plain;charset=utf-8'. To retrieve an [HOCR](http://en.wikipedia.org/wiki/HOCR) representation of the file (indicated by the 'Accept: text/HTML' header), issue the following GET request:
 
 ```
-curl -v -X GET -H 'Accept: text/HTML' http://host/ocr_rest/page/file.jpg
+curl -v -X GET -H 'Accept: text/html' http://host/ocr_rest/page/file.jpg
 ```
 This request will return the OCRed text in the response body and a Content-Type response header of 'text/html;charset=utf-8'.
 
@@ -74,5 +74,7 @@ The application logs some basic info to the web server's error log, including:
 # To do
 
 * More, better error detection and handling.
-* Some logging options.
-* Add deletion of OCR output to DELETE requests.
+* Add logging options.
+* Add deletion of OCR output.
+* Add round-robin server selection.
+* Add PDF output.
