@@ -19,14 +19,15 @@ $config = array(
 /**
  * List of token strings that authorize clients to access this ocr server.
  * Leave empty if you don't want to restrict access. Clients must send the
- * X-Auth-Key request header containing a key from this list.
+ * X-Auth-Key request header containing a key from this list. Tokens can be
+ * as long or short as you want - it's up to you.
  */
 $tokens = array(
   // 'b692d302-3435', '484d-9c1f-e4e34a4a8f92'
 );
 
 /**
- * List of regexes matching client IP addresses allowed to access this docr
+ * List of regexes matching client IP addresses allowed to access this ocr
  * server. Leave empty if you don't want to restrict access by IP address.
  */
 $allowed_ip_addresses = array(
