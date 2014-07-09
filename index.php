@@ -131,7 +131,7 @@ $app->get('/page/:filename', function ($filename) use ($app) {
     $app->response->setBody($transcript);
   }
   // If the client wants text, generate text output.
-  if (preg_match('/text\/plain/', $request->headers('Accept'))) {
+  elseif (preg_match('/text\/plain/', $request->headers('Accept'))) {
     $transcript_output_path = getTranscriptPathFromImagePath($image_input_path);
     $log->debug("Transcript output path: " . $transcript_output_path);
     // Execute OCR command
@@ -145,6 +145,10 @@ $app->get('/page/:filename', function ($filename) use ($app) {
     $transcript = file_get_contents($transcript_output_path . '.txt');
     $app->response->headers->set('Content-Type', 'text/plain;charset=utf-8');
     $app->response->setBody($transcript);
+  }
+  else {
+     $log->debug("No Accept request header provided, don't know what to do.");
+     $app->halt(300);
   }
 });
 
