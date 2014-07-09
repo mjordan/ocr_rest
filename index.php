@@ -1,8 +1,8 @@
 <?php
 
 /**
- * A simple Resource_oriented server that performs OCR on a file. Currently
- * uses tesseract as the OCR engine.
+ * A simple Resource-oriented server that performs OCR on a file.
+ * Currently uses tesseract as the OCR engine.
  *
  * Written in the Slim micro-framework, slimframework.com.
  * 
@@ -79,7 +79,7 @@ $app->put('/page/:filename', function ($filename) use ($app) {
   // Log some stuff to the apache error_log.
   $log = $app->getLog();
 
-  // Write out the image file
+  // Write out the image file.
   if (file_put_contents($image_input_path, $page_image_content)) {
     $log->debug("Image output path from PUT succeeded: " . $image_input_path);
     $app->halt(201);
@@ -157,6 +157,8 @@ $app->get('/page/:filename', function ($filename) use ($app) {
  *  The filename appended to /page, tokenized by :filename.
  * @param object $app
  *  The global $app object instantiated at the top of this file.
+ *
+ * @todo: Add deletion of .txt and .html derivatives.
  */
 $app->delete('/page/:filename', function ($filename) use ($app) {
   global $config;
