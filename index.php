@@ -9,8 +9,6 @@
  * Released into the Public Domain/distributed under the unlicense/CC0.
  */
 
-// Get the plugin config file and provide a default value for
-// $plugins if the file cannot be loaded.
 require 'config.php';
 
 // Slim setup.
@@ -122,8 +120,10 @@ $app->get('/page/:filename', function ($filename) use ($app) {
     $command = $config['ocr_engine'] . ' ' . escapeshellarg($image_input_path) . ' ' . 
       $transcript_output_path . ' hocr';
     $log->debug("Command: " . $command);
-    // @todo: Catch error on exec().
     $ret = exec($command, $ret, $exit_value);
+    if ($exit_value) {
+      $log->debug("Exit value for $command was not 0: " . $ret);
+    }
     // Write out transcript to the client. Tesseract adds the extension
     // .html to its HOCR output file. 
     $transcript = file_get_contents($transcript_output_path . '.html');
@@ -138,8 +138,10 @@ $app->get('/page/:filename', function ($filename) use ($app) {
     $command = $config['ocr_engine'] . ' ' . escapeshellarg($image_input_path) . ' ' . 
       $transcript_output_path;
     $log->debug("Command: " . $command);
-    // @todo: Catch error on exec().
     $ret = exec($command, $ret, $exit_value);
+    if ($exit_value) {
+      $log->debug("Exit value for $command was not 0: " . $ret);
+    }
     // Write out transcript to the client. Tesseract adds the extension
     // .txt to its plain text output file.
     $transcript = file_get_contents($transcript_output_path . '.txt');
