@@ -12,8 +12,6 @@ $config = array(
   // OCR transcripts are stored. Must be writable by the web server.
   'image_base_dir' => '/tmp/ocr_images/',
   'transcript_base_dir' => '/tmp/ocr_transcripts/',
-  // A |-spearated list of extensions for the page image files you want to OCR.
-  'image_file_extensions' => 'jpg|tif',
   // Path to the OCR engine.
   'ocr_engine' => "/usr/bin/tesseract"
 );
@@ -37,18 +35,9 @@ $allowed_ip_addresses = array(
 );
 
 /**
- * File extension => mime type mapping for common image formats. 
- * If you are processing formats not in this list, add them.
+ * List of file extensions on files that are allowed to be PUT to this OCR server.
+ * If you are processing files not represented in this list, add their extensions.
  */
-$image_mime_types = array(
-  'bmp' => 'image/x-ms-bmp',
-  'gif' => 'image/gif',
-  'jpg' => 'image/jpeg',
-  'jpeg' => 'image/jpeg',
-  'jp2' => 'image/jp2',
-  'pcx' => 'image/pcx',
-  'png' => 'image/png',
-  'psd' => 'image/x-photoshop',
-  'tif' => 'image/tiff',
-  'tiff' => 'image/tiff',
+$allowed_image_extensions = array(
+  'jpg', 'jpeg', 'jp2', 'tif', 'tiff'
 );

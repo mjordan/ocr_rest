@@ -58,6 +58,15 @@ $app->hook('slim.before', function () use ($app) {
  */
 $app->put('/page/:filename', function ($filename) use ($app) {
   global $config;
+  global $allowed_image_extensions;
+
+  // Check to make sure that the file's extension is in the list of
+  // allowed values.
+  $file_path_info = pathinfo($filename);
+  if (!in_array($file_path_info['extension'], $allowed_image_extensions)) {
+    $log->debug("Image file format not allowed: " . $filename);
+    $app->halt(400);
+  }
 
   // Create the subdirectory where the images and transcripts will be written.
   if (!file_exists($config['image_base_dir'])) {
