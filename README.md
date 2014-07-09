@@ -19,8 +19,8 @@ This server is written in the Slim PHP microframework (http://www.slimframework.
 
 Clone the github repo beneath your Apache web root, and from within the resulting directory, issue the following commands:
 
-1. curl -s https://getcomposer.org/installer | php
-2. php composer.phar install
+1. ```curl -s https://getcomposer.org/installer | php```
+2. ```php composer.phar install```
 
 That's it. Your server is now ready at http://yourhost/path/to/where/you/cloned/page. For example, if you cloned the git repo directly beneath your web root, the server will be at  http://yourhost/ocr_rest/page and will accept PUT requests as illustrated above.
 
