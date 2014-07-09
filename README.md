@@ -1,22 +1,22 @@
 # Overview and Usage
 
-A simple OCR service over REST. A typical workflow is to PUT the image to the server, then GET the OCRed output. Clients can then issue a DELETE request to remove the image file from the server. The OCR operation is performed during the GET requests, so those requests can take a few seconds to complete.
+A simple OCR service over REST. A typical workflow from a client's perspective would be to PUT the image to the server, then GET the OCRed output, either the plain text version or the marked up HOCR version. Clients can then issue a DELETE request to remove the image file from the server. The OCR operation is handed off to the Tesseract OCR engine during the GET requests, which can take a few seconds to complete.
 
 Image files to be OCRed are PUT to the server using requests similar to the following (using curl as an example HTTP agent), which include the path to the file in the request URL:
 
 ```
-curl -X PUT --data-binary @/path/to/image/file.jpg http://serverhost.example.com/ocr_rest/page/file.jpg
+curl -v -X PUT --data-binary @/path/to/image/file.jpg http://serverhost.example.com/ocr_rest/page/file.jpg
 ```
 
 To retrieve a plain text representation of the file (indicated by the 'Accept: text/plain' header), issue the following GET request (note that the image filename is appended to the end of the request URL):
 
 ```
-curl -X GET -v -H 'Accept: text/plain' http://thinkpad/ocr_rest/page/file.jpg
+curl -v -X GET -H 'Accept: text/plain' http://thinkpad/ocr_rest/page/file.jpg
 ```
 This request will return a response to the client with the OCRed text in the response body and a Content-Type response header of 'text/plain;charset=utf-8'. To retrieve an [HOCR](http://en.wikipedia.org/wiki/HOCR) representation of the file (indicated by the 'Accept: text/HTML' header), issue the following GET request:
 
 ```
-curl -X GET -v -H 'Accept: text/HTML' http://thinkpad/ocr_rest/page/file.jpg
+curl -v -X GET -H 'Accept: text/HTML' http://thinkpad/ocr_rest/page/file.jpg
 ```
 This request will return the OCRed text in the response body and a Content-Type response header of 'text/html;charset=utf-8'.
 
@@ -53,7 +53,7 @@ This OCR server provides two ways to limit access to it: via the use of API toke
 To use API tokens, populate the $tokens array in config.php with your tokens, and have your clients use them in the 'X-Auth-Key' HTTP request header, as in this example:
 
 ```
-curl -X PUT -H 'X-Auth-Key: %123456789rav0' --data-binary @/path/to/image/file.jpg http://serverhost.example.com/ocr_rest/page/file.jpg
+curl -v -X PUT -H 'X-Auth-Key: %123456789rav0' --data-binary @/path/to/image/file.jpg http://serverhost.example.com/ocr_rest/page/file.jpg
 ```
 
 The OCR server does not impose any constraints on the form of the tokens - you make them up according to whatever pattern you want.
