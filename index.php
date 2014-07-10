@@ -130,9 +130,15 @@ $app->get('/page/:filename', function ($filename) use ($app) {
     $command = $paths['ocr_engine'] . ' ' . escapeshellarg($image_input_path) . ' ' . 
       $transcript_output_path . ' hocr';
     $log->debug("Command: " . $command);
+    $time_pre = microtime(true);
     $ret = exec($command, $ret, $exit_value);
+    $time_post = microtime(true);
+    $exec_time = $time_post - $time_pre;
     if ($exit_value) {
       $log->debug("Exit value for $command was not 0: " . $ret);
+    }
+    else {
+      $log->debug("Transcript creation time (seconds): " . $exec_time);
     }
     // Write out transcript to the client. Tesseract adds the extension
     // .html to its HOCR output file. 
@@ -148,9 +154,15 @@ $app->get('/page/:filename', function ($filename) use ($app) {
     $command = $paths['ocr_engine'] . ' ' . escapeshellarg($image_input_path) . ' ' . 
       $transcript_output_path;
     $log->debug("Command: " . $command);
+    $time_pre = microtime(true);
     $ret = exec($command, $ret, $exit_value);
+    $time_post = microtime(true);
+    $exec_time = $time_post - $time_pre;    
     if ($exit_value) {
       $log->debug("Exit value for $command was not 0: " . $ret);
+    }
+    else {
+      $log->debug("Transcript creation time (seconds): " . $exec_time);
     }
     // Write out transcript to the client. Tesseract adds the extension
     // .txt to its plain text output file.
