@@ -78,6 +78,5 @@ The application logs some basic info to the web server's error log, including:
 # To do
 
 * Add more error detection and handling.
-* Add logging options.
 * Add deletion of OCR output.
 * Add PDF output.

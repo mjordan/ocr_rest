@@ -15,10 +15,11 @@ require 'config.php';
 require 'vendor/autoload.php';
 \Slim\Slim::registerAutoloader();
 $app = new \Slim\Slim();
+$app->config('log.enabled', $log_enabled);
 
 /**
- * Slim hook that fires before every request, in this case, to
- * perform authorization by token or IP address.
+ * Slim middleware hook that fires before every request, in this case,
+ * to perform authorization by token or IP address.
  *
  * @param object $app
  * The global $app object instantiated at the top of this file.
@@ -57,8 +58,11 @@ $app->hook('slim.before', function () use ($app) {
  *  The global $app object instantiated at the top of this file.
  */
 $app->put('/page/:filename', function ($filename) use ($app) {
-  global $config;
+  global $paths;
   global $allowed_image_extensions;
+
+  // Log some stuff to STDERR.
+  $log = $app->getLog();
 
   // Check to make sure that the file's extension is in the list of
   // allowed values.
@@ -69,11 +73,11 @@ $app->put('/page/:filename', function ($filename) use ($app) {
   }
 
   // Create the subdirectory where the images and transcripts will be written.
-  if (!file_exists($config['image_base_dir'])) {
-    mkdir($config['image_base_dir'], 0777, TRUE);
+  if (!file_exists($paths['image_base_dir'])) {
+    mkdir($paths['image_base_dir'], 0777, TRUE);
   }
-  if (!file_exists($config['transcript_base_dir'])) {
-    mkdir($config['transcript_base_dir'], 0777, TRUE);
+  if (!file_exists($paths['transcript_base_dir'])) {
+    mkdir($paths['transcript_base_dir'], 0777, TRUE);
   }
 
   $request = $app->request();
@@ -81,10 +85,7 @@ $app->put('/page/:filename', function ($filename) use ($app) {
   $page_image_content = $request->getBody();
  
   $request = $app->request();
-  $image_input_path = $config['image_base_dir'] . $filename;
-
-  // Log some stuff to the apache error_log.
-  $log = $app->getLog();
+  $image_input_path = $paths['image_base_dir'] . $filename;
 
   // Write out the image file.
   if (file_put_contents($image_input_path, $page_image_content)) {
@@ -107,11 +108,11 @@ $app->put('/page/:filename', function ($filename) use ($app) {
  *  The global $app object instantiated at the top of this file.
  */
 $app->get('/page/:filename', function ($filename) use ($app) {
-  global $config;
+  global $paths;
   $request = $app->request();
-  $image_input_path = $config['image_base_dir'] . $filename;
+  $image_input_path = $paths['image_base_dir'] . $filename;
 
-  // Log some stuff to the apache error_log.
+  // Log some stuff to STDERR.
   $log = $app->getLog();
 
   // Check to see if the image file exists and if not, return a 204 No Content
@@ -126,7 +127,7 @@ $app->get('/page/:filename', function ($filename) use ($app) {
     $transcript_output_path = getTranscriptPathFromImagePath($image_input_path);
     $log->debug("Transcript output path: " . $transcript_output_path);
     // Execute OCR command
-    $command = $config['ocr_engine'] . ' ' . escapeshellarg($image_input_path) . ' ' . 
+    $command = $paths['ocr_engine'] . ' ' . escapeshellarg($image_input_path) . ' ' . 
       $transcript_output_path . ' hocr';
     $log->debug("Command: " . $command);
     $ret = exec($command, $ret, $exit_value);
@@ -144,7 +145,7 @@ $app->get('/page/:filename', function ($filename) use ($app) {
     $transcript_output_path = getTranscriptPathFromImagePath($image_input_path);
     $log->debug("Transcript output path: " . $transcript_output_path);
     // Execute OCR command
-    $command = $config['ocr_engine'] . ' ' . escapeshellarg($image_input_path) . ' ' . 
+    $command = $paths['ocr_engine'] . ' ' . escapeshellarg($image_input_path) . ' ' . 
       $transcript_output_path;
     $log->debug("Command: " . $command);
     $ret = exec($command, $ret, $exit_value);
@@ -176,8 +177,8 @@ $app->get('/page/:filename', function ($filename) use ($app) {
  * @todo: Add deletion of .txt and .html derivatives.
  */
 $app->delete('/page/:filename', function ($filename) use ($app) {
-  global $config;
-  $image_input_path = $config['image_base_dir'] . $filename;
+  global $paths;
+  $image_input_path = $paths['image_base_dir'] . $filename;
 
   // Check to see if the image file exists and if not, return a 204 No Content
   // response.
@@ -207,18 +208,18 @@ $app->run();
  *
  * @param string $image_path
  *  The full path to the image being processed. For example:
- *  /home/mark/Documents/apache_thinkpad/docr_images/Hutchinson1794-1-0253.jpg
+ *  /tmp/ocr_images/Hutchinson1794-1-0253.jpg
  *
  * @return string
  *  The full path to the transcript file corresponding to the image. For example:
  *  /tmp/docr_transcripts/Hutchinson1794-1-0253.txt
  */
 function getTranscriptPathFromImagePath($image_path) {
-  global $config;
+  global $paths;
   // Replace the image base directory configuration value with the
   // transcript base directory configuration value.
-  $image_base_path_pattern = '#' . $config['image_base_dir'] . '#';
-  $tmp_path = preg_replace($image_base_path_pattern, $config['transcript_base_dir'], $image_path);
+  $image_base_path_pattern = '#' . $paths['image_base_dir'] . '#';
+  $tmp_path = preg_replace($image_base_path_pattern, $paths['transcript_base_dir'], $image_path);
   $path_parts = pathinfo($tmp_path);
   $transcript_path = $path_parts['dirname'] . DIRECTORY_SEPARATOR . $path_parts['filename'];
   return $transcript_path;

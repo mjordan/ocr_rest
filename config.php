@@ -7,14 +7,22 @@
 /**
  * General application configuration settings.
  */
-$config = array(
+$paths = array(
   // Paths to the directories where uploaded imgages and their derivative
-  // OCR transcripts are stored. Must be writable by the web server.
+  // OCR transcripts are stored. Must end in / and be writable by the web
+  // server.
   'image_base_dir' => '/tmp/ocr_images/',
   'transcript_base_dir' => '/tmp/ocr_transcripts/',
   // Path to the OCR engine.
   'ocr_engine' => "/usr/bin/tesseract"
 );
+
+/**
+ * Boolean to turn on or off basic debug logging (which is written to STDERR,
+ * in most cases your web server's error log). You may want to set this to
+ * false during production.
+*/
+$log_enabled = true;
 
 /**
  * List of token strings that authorize clients to access this ocr server.
