@@ -14,7 +14,7 @@ require 'config.php';
 // Slim setup.
 require 'vendor/autoload.php';
 \Slim\Slim::registerAutoloader();
-$app = new \Slim\Slim();
+$app = new \Slim\Slim();  
 $app->config('log.enabled', $log_enabled);
 
 /**
@@ -167,18 +167,18 @@ $app->get('/page/:filename', function ($filename) use ($app) {
 /**
  * Route for DELETE /page. No request body is returned, but a reponse code of either 200 (on success) or
  * 500 (on failure) is returned.
- * Example request: curl -X DELETE --data-binary @/path/to/image/file.jpg http://thinkpad/ocr-server/page/file.jpg
+ * Example request: curl -X DELETE http://thinkpad/ocr-server/page/file.jpg
  *
  * @param string $filename
  *  The filename appended to /page, tokenized by :filename.
  * @param object $app
  *  The global $app object instantiated at the top of this file.
- *
- * @todo: Add deletion of .txt and .html derivatives.
  */
 $app->delete('/page/:filename', function ($filename) use ($app) {
   global $paths;
   $image_input_path = $paths['image_base_dir'] . $filename;
+
+  $log = $app->getLog();
 
   // Check to see if the image file exists and if not, return a 204 No Content
   // response.
@@ -188,12 +188,25 @@ $app->delete('/page/:filename', function ($filename) use ($app) {
   }
 
   if (unlink($image_input_path)) {
+    $log->debug("Image DELETE succeeded: " . $image_input_path);
+    // Delete the corresponding transcripts. Assumes that the image file existed and
+    // was successfully deleted.
+    $txt_transcript_path = getTranscriptPathFromImagePath($image_input_path) . '.txt';
+    if (file_exists($txt_transcript_path)) {
+      if (unlink($txt_transcript_path)) {
+        $log->debug("Text transcript DELETE succeeded: " . $txt_transcript_path);
+      }
+    }
+    $html_transcript_path = getTranscriptPathFromImagePath($image_input_path) . '.html';
+    if (file_exists($html_transcript_path)) {
+        $log->debug("HTML transcript DELETE succeeded: " . $html_transcript_path);
+      unlink($html_transcript_path);
+    }
     $app->halt(200);
   }
   else {
     $app->halt(500);
   }
-
 });
 
 // Run the Slim app.
@@ -211,8 +224,8 @@ $app->run();
  *  /tmp/ocr_images/Hutchinson1794-1-0253.jpg
  *
  * @return string
- *  The full path to the transcript file corresponding to the image. For example:
- *  /tmp/docr_transcripts/Hutchinson1794-1-0253.txt
+ *  The full path to the transcript file corresponding to the image without an extension.
+ *  For example: /tmp/docr_transcripts/Hutchinson1794-1-0253
  */
 function getTranscriptPathFromImagePath($image_path) {
   global $paths;

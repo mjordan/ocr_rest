@@ -22,7 +22,7 @@ curl -X GET -H 'Accept: text/html' http://host/ocr_rest/page/file.jpg
 ```
 That request will return the OCRed text in the response body and a Content-Type response header of 'text/html;charset=utf-8'.
 
-To delete an image file, issue the following DELETE request:
+To delete an image file and all transcripts created from it, issue the following DELETE request:
 
 ```
 curl -X DELETE http://host/ocr_rest/page/Hutchinson1794-1-0257.jpg
@@ -78,5 +78,4 @@ The application logs some basic info to the web server's error log, including:
 # To do
 
 * Add more error detection and handling.
-* Add deletion of OCR output.
 * Add PDF output.
