@@ -99,8 +99,8 @@ $app->put('/page/:filename', function ($filename) use ($app) {
 });
 
 /**
- * Route for GET /page. Example requests: curl -X GET -v -H 'Accept: text/HTML' http://host/ocr_rest/page/file.jpg
- * and curl -X GET -v -H 'Accept: text/text`' http://host/ocr_rest/page/file.jpg
+ * Route for GET /page. Example requests: curl -X GET -v -H 'Accept: text/html' http://host/ocr_rest/page/file.jpg
+ * and curl -X GET -v -H 'Accept: text/plain`' http://host/ocr_rest/page/file.jpg
  *
  * @param string $filename
  *  The filename appended to /page, tokenized by :filename.
