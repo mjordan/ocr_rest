@@ -1,6 +1,6 @@
 # Overview
 
-A simple OCR service over REST that uses the [Tesseract](http://code.google.com/p/tesseract-ocr/) OCR engine (although any OCR engine that has a command-line interface could be used instead). A typical workflow from a client's perspective would be to PUT the image to the server, then GET the OCRed output, either the plain text version or the [HOCR](http://en.wikipedia.org/wiki/HOCR) version. Clients can then issue a DELETE request to remove the image file from the server. The OCR operation is handed off to Tesseract during the GET requests, so these can take a few seconds to complete.
+A simple OCR service over REST that uses the [Tesseract](http://code.google.com/p/tesseract-ocr/) OCR engine. A typical workflow from a client's perspective would be to PUT the image to the server, then GET the OCRed output, either the plain text version or the [HOCR](http://en.wikipedia.org/wiki/HOCR) version. Clients can then issue a DELETE request to remove the image file from the server. The OCR operation is handed off to Tesseract during the GET requests, so these can take a few seconds to complete.
 
 # Usage Details
 
@@ -81,4 +81,5 @@ Logging is enabled by default but can be turned of by setting the value of $log_
 # To do
 
 * Add more error detection and handling.
-* Add PDF output.
+* Add PDF output (available only in Tesseract 3.03).
+* Add ability to specify language data.

@@ -50,7 +50,7 @@ $app->hook('slim.before', function () use ($app) {
 
 /**
  * Route for PUT /page. The request body will contain the image file.
- * Example request: curl -X PUT --data-binary @/path/to/image/file.jpg http://thinkpad/ocr-server/page/file.jpg
+ * Example request: curl -X PUT --data-binary @/path/to/image/file.jpg http://host/ocr-server/page/file.jpg
  *
  * @param string $filename
  *  The filename appended to /page, tokenized by :filename.
@@ -99,8 +99,8 @@ $app->put('/page/:filename', function ($filename) use ($app) {
 });
 
 /**
- * Route for GET /page. Example requests: curl -X GET -v -H 'Accept: text/HTML' http://thinkpad/ocr_rest/page/file.jpg
- * and curl -X GET -v -H 'Accept: text/text`' http://thinkpad/ocr_rest/page/file.jpg
+ * Route for GET /page. Example requests: curl -X GET -v -H 'Accept: text/HTML' http://host/ocr_rest/page/file.jpg
+ * and curl -X GET -v -H 'Accept: text/text`' http://host/ocr_rest/page/file.jpg
  *
  * @param string $filename
  *  The filename appended to /page, tokenized by :filename.
@@ -179,7 +179,7 @@ $app->get('/page/:filename', function ($filename) use ($app) {
 /**
  * Route for DELETE /page. No request body is returned, but a reponse code of either 200 (on success) or
  * 500 (on failure) is returned.
- * Example request: curl -X DELETE http://thinkpad/ocr-server/page/file.jpg
+ * Example request: curl -X DELETE http://host/ocr-server/page/file.jpg
  *
  * @param string $filename
  *  The filename appended to /page, tokenized by :filename.
