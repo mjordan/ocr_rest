@@ -4,13 +4,13 @@ A simple OCR service over REST that uses the [Tesseract](http://code.google.com/
 
 # Usage Details
 
-Image files to be OCRed are PUT to the server using requests similar to the following (using curl as an example HTTP agent), which include the name of the file being uploaded in the request URL:
+Image files to be OCRed are PUT to the server using requests similar to the following (using curl as an example HTTP agent). Note that you should include the name of the file being uploaded at the end of th request URL:
 
 ```
 curl -X PUT --data-binary @/path/to/image/file.jpg http://serverhost.example.com/ocr_rest/page/file.jpg
 ```
 
-To retrieve a plain text representation of the file, issue the following GET request. Note that the image filename is appended to the end of the request URL and that the 'Accept: text/plain' header is present:
+To retrieve a plain text representation of the file, issue the following GET request. The name of the file that was PUT is appended to the end of the request URL, and the request must include an 'Accept: text/plain' header:
 
 ```
 curl -X GET -H 'Accept: text/plain' http://host/ocr_rest/page/file.jpg
@@ -22,7 +22,7 @@ curl -X GET -H 'Accept: text/html' http://host/ocr_rest/page/file.jpg
 ```
 That request will return the OCRed text in the response body and a Content-Type response header of 'text/html;charset=utf-8'.
 
-To delete an image file and all transcripts created from it, issue the following DELETE request:
+To delete an image file and all transcripts created from it, issue the following DELETE request (again using the filename to identify the resource):
 
 ```
 curl -X DELETE http://host/ocr_rest/page/Hutchinson1794-1-0257.jpg
@@ -33,11 +33,11 @@ Successful deletion of the image will result in a 200 response code, unsuccessfu
 # Prerequisites
 
 * PHP >= 5.3.0 (see caveat below about choice of web server)
-* [Tesseract](http://code.google.com/p/tesseract-ocr/). Install Tesseract according to the instructions provided for your operating system.
+* [Tesseract](http://code.google.com/p/tesseract-ocr/). Tesseract should be installed according to the instructions provided for your operating system before you start issuing requests to your OCR server.
 
 # Installation
 
-The REST server itself is written in the [Slim PHP microframework](http://www.slimframework.com/). To install the server application, clone the git repo, then install Slim following the instructions below, which describe how to install Slim using composer.
+The REST server itself is written in the [Slim PHP microframework](http://www.slimframework.com/). To install the server application, clone the git repo, then install Slim following the instructions below, which describe how to install the framework using composer.
 
 Clone the github repo beneath your Apache web root, and from within the resulting directory, issue the following commands to install Slim:
 
@@ -50,7 +50,7 @@ You should adjust settings in config.php before testing, particularly the paths 
 
 One caveat: Slim applications work best with Apache HTTPD web server. However, getting Slim to work with other web servers [is possible](https://github.com/codeguy/Slim).
 
-# Limiting Access to your Server
+# Limiting Access to your OCR Server
 
 This REST server provides two ways to limit access to it: via the use of API tokens and via an IP addresss whitelist.
 
@@ -75,6 +75,8 @@ The application logs some basic info to the web server's error log, including:
 * If the OCR engine encouters an error (specifically, if its exit code is not 0), the output of the command is logged.
 * Paths to the image file uploaded during PUT requests, and the OCR output generated during GET requests, are logged.
 * During GET requests, if the expected OCR output files are not found (possibly because they were not created or there is no correspoding image file), their paths are logged.
+
+Logging is enabled by default but can be turned of by setting the value of $log_enabled in config.php to false.
 
 # To do
 
