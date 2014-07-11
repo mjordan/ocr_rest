@@ -1,8 +1,9 @@
 <?php
 
 /**
- * A simple Resource-oriented server that performs OCR on a file.
- * Currently uses tesseract as the OCR engine.
+ * A simple resource-oriented server that performs OCR on an image file.
+ * Currently uses tesseract (http://code.google.com/p/tesseract-ocr/)
+ * as the OCR engine.
  *
  * Written in the Slim micro-framework, slimframework.com.
  * 
@@ -18,8 +19,8 @@ $app = new \Slim\Slim();
 $app->config('log.enabled', $log_enabled);
 
 /**
- * Slim middleware hook that fires before every request, in this case,
- * to perform authorization by token or IP address.
+ * Slim middleware hook that fires before every request to perform
+ * client authorization by token or IP address.
  *
  * @param object $app
  * The global $app object instantiated at the top of this file.
@@ -61,7 +62,7 @@ $app->put('/page/:filename', function ($filename) use ($app) {
   global $paths;
   global $allowed_image_extensions;
 
-  // Log some stuff to STDERR.
+  // Set up logging (writes to STDERR).
   $log = $app->getLog();
 
   // Check to make sure that the file's extension is in the list of
@@ -72,7 +73,8 @@ $app->put('/page/:filename', function ($filename) use ($app) {
     $app->halt(400);
   }
 
-  // Create the subdirectory where the images and transcripts will be written.
+  // Create the subdirectory where the images and transcripts will be written,
+  // if it does not already exist.
   if (!file_exists($paths['image_base_dir'])) {
     mkdir($paths['image_base_dir'], 0777, TRUE);
   }
@@ -84,10 +86,8 @@ $app->put('/page/:filename', function ($filename) use ($app) {
   // Get the image content from the request body.
   $page_image_content = $request->getBody();
  
-  $request = $app->request();
-  $image_input_path = $paths['image_base_dir'] . $filename;
-
   // Write out the image file.
+  $image_input_path = $paths['image_base_dir'] . $filename;
   if (file_put_contents($image_input_path, $page_image_content)) {
     $log->debug("Image output path from PUT succeeded: " . $image_input_path);
     $app->halt(201);
@@ -112,7 +112,7 @@ $app->get('/page/:filename', function ($filename) use ($app) {
   $request = $app->request();
   $image_input_path = $paths['image_base_dir'] . $filename;
 
-  // Log some stuff to STDERR.
+  // Set up logging (writes to STDERR).
   $log = $app->getLog();
 
   // Check to see if the image file exists and if not, return a 204 No Content
@@ -126,7 +126,7 @@ $app->get('/page/:filename', function ($filename) use ($app) {
   if (preg_match('/text\/html/', $request->headers('Accept'))) {
     $transcript_output_path = getTranscriptPathFromImagePath($image_input_path);
     $log->debug("Transcript output path: " . $transcript_output_path);
-    // Execute OCR command
+    // Execute the OCR command.
     $command = $paths['ocr_engine'] . ' ' . escapeshellarg($image_input_path) . ' ' . 
       $transcript_output_path . ' hocr';
     $log->debug("Command: " . $command);
@@ -150,7 +150,7 @@ $app->get('/page/:filename', function ($filename) use ($app) {
   elseif (preg_match('/text\/plain/', $request->headers('Accept'))) {
     $transcript_output_path = getTranscriptPathFromImagePath($image_input_path);
     $log->debug("Transcript output path: " . $transcript_output_path);
-    // Execute OCR command
+    // Execute the OCR command.
     $command = $paths['ocr_engine'] . ' ' . escapeshellarg($image_input_path) . ' ' . 
       $transcript_output_path;
     $log->debug("Command: " . $command);
@@ -177,8 +177,8 @@ $app->get('/page/:filename', function ($filename) use ($app) {
 });
 
 /**
- * Route for DELETE /page. No request body is returned, but a reponse code of either 200 (on success) or
- * 500 (on failure) is returned.
+ * Route for DELETE /page. Returns no request body, only returns a reponse code
+ * of either 200 (on success) or 500 (on failure).
  * Example request: curl -X DELETE http://host/ocr_rest/page/file.jpg
  *
  * @param string $filename
@@ -190,6 +190,7 @@ $app->delete('/page/:filename', function ($filename) use ($app) {
   global $paths;
   $image_input_path = $paths['image_base_dir'] . $filename;
 
+  // Set up logging (writes to STDERR).
   $log = $app->getLog();
 
   // Check to see if the image file exists and if not, return a 204 No Content
@@ -199,6 +200,7 @@ $app->delete('/page/:filename', function ($filename) use ($app) {
      $app->halt(204);
   }
 
+  // Delete the image file.
   if (unlink($image_input_path)) {
     $log->debug("Image DELETE succeeded: " . $image_input_path);
     // Delete the corresponding transcripts. Assumes that the image file existed and
@@ -229,7 +231,7 @@ $app->run();
  */
 
 /**
- * Creates a path to a transcript from a image path.
+ * Creates a path to a transcript from an image path.
  *
  * @param string $image_path
  *  The full path to the image being processed. For example:
@@ -249,5 +251,4 @@ function getTranscriptPathFromImagePath($image_path) {
   $transcript_path = $path_parts['dirname'] . DIRECTORY_SEPARATOR . $path_parts['filename'];
   return $transcript_path;
 }
-
 ?>
