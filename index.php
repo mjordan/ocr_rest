@@ -18,6 +18,8 @@ require 'vendor/autoload.php';
 $app = new \Slim\Slim();  
 $app->config('log.enabled', $log_enabled);
 
+ini_set('max_execution_time', $max_exection_time);
+
 /**
  * Slim middleware hook that fires before every request to perform
  * client authorization by token or IP address.

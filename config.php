@@ -21,8 +21,15 @@ $paths = array(
  * Boolean to turn on or off basic debug logging (which is written to STDERR,
  * in most cases your web server's error log). You may want to set this to
  * false during production.
-*/
+ */
 $log_enabled = true;
+
+/**
+ * Maximum time for the REST server to execute, in seconds. Performing OCR can
+ * take some time, and this setting overrides the 'max_execution_time'
+ * directive in your web server's php.ini for this script only.
+ */
+$max_exection_time = 240;
 
 /**
  * List of token strings that authorize clients to access this ocr server.
