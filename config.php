@@ -56,3 +56,15 @@ $allowed_ip_addresses = array(
 $allowed_image_extensions = array(
   'jpg', 'jpeg', 'jp2', 'tif', 'tiff'
 );
+
+/**
+ * List of other OCR REST server /page endpoints that will accept requests
+ * from clients of this ORC REST server. Useful in load distribution. Refer
+ * to README.md for more information.
+ */
+$alternates = array(
+  // 'http://ocr1.example.com/ocr_rest/page',
+  // 'http://ocr2.example.com/ocr_rest/page',
+  // 'http://ocr3.example.com/ocr_rest/page',
+  // 'http://ocr4.example.com/ocr_rest/page',
+);

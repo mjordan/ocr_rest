@@ -225,6 +225,55 @@ $app->delete('/page/:filename', function ($filename) use ($app) {
   }
 });
 
+/**
+ * Route for GET /alternates. Example requests: curl -X GET -v http://host/ocr_rest/alternates
+ *
+ * @param object $app
+ *  The global $app object instantiated at the top of this file.
+ */
+$app->get('/alternates', function () use ($app) {
+  global $alternates;
+  $request = $app->request();
+
+  // Set up logging (writes to STDERR).
+  $log = $app->getLog();
+
+  if (!count($alternates)) {
+    $log->debug("No alternates found in GET");
+    $app->halt(204);
+  }
+
+  // Return body content text containing all alternates separated by
+  // PHP_EOL, so it can be split by the client for randomization.
+  $body = implode(PHP_EOL, $alternates);
+  $app->response->headers->set('Content-Type', 'text/plain;charset=utf-8');
+  $app->response->setBody($body);
+});
+
+/**
+ * Route for GET /alternate. Example requests: curl -X GET -v http://host/ocr_rest/alternate
+ *
+ * @param object $app
+ *  The global $app object instantiated at the top of this file.
+ */
+$app->get('/alternate', function () use ($app) {
+  global $alternates;
+  $request = $app->request();
+
+  // Set up logging (writes to STDERR).
+  $log = $app->getLog();
+
+  if (!count($alternates)) {
+    $log->debug("No alternates found in GET");
+    $app->halt(204);
+  }
+
+  // Return a single, randomly chosen alternate in the response body.
+  $key = array_rand($alternates);
+  $app->response->headers->set('Content-Type', 'text/plain;charset=utf-8');
+  $app->response->setBody($alternates[$key]);
+});
+
 // Run the Slim app.
 $app->run();
 

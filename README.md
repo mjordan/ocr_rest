@@ -78,6 +78,14 @@ The application logs some basic info to the web server's error log, including:
 
 Logging is enabled by default but can be turned of by setting the value of $log_enabled in config.php to false.
 
+# Load distribution / horizontal scaling
+
+The OCR server provides a simple mechanism for defining a list of 'alternates,' which are URLs to other OCR server /page endpoints. Although the server itself does not perform any load balancing or redirection of requests, it can provide to clients either the entire list of alternates or a single, randomly chosen alternate from the list. The entire list of alternates is available at http://serverhost.example.com/ocr_rest/alternates, and a single, randomly chosen alternate URL is available at http://serverhost.example.com/ocr_rest/alternate. In the first case, the response body contains all defined alternates separated by newlines (i.e., one per line) for easy parsing by client scripts; in the second case, the response body contains a single alternate's URL.
+
+Clients that use alternates should issue the appropriate GET request (either for the entire list or for a single URL) *before* the initial PUT request, and use the same alternate URL for all subsequent requests.
+
+If no alternates are defined in config.php, requests for alternates return a 204 No Content code.
+
 # To do
 
 * Add more error detection and handling.
